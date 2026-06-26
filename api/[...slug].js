@@ -124,8 +124,12 @@ app.post('/api/delete-session', (req, res) => {
 // Servir les fichiers statiques (zen/)
 app.use(express.static(path.join(__dirname, '../zen')));
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../zen/index.html')));
-app.get('/control', (req, res) => res.sendFile(path.join(__dirname, '../zen/control.html')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../zen/index.html'));
+});
 
-// Export pour Vercel
+app.get('/control', (req, res) => {
+  res.sendFile(path.join(__dirname, '../zen/control.html'));
+});
+
 module.exports = app;
