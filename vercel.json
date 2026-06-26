@@ -1,7 +1,10 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/[...slug].js", "use": "@vercel/node" }
+    {
+      "src": "api/[...slug].js",
+      "use": "@vercel/node"
+    }
   ],
   "routes": [
     { "src": "/socket.io/(.*)", "dest": "/api/[...slug]" },
