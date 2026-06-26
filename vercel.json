@@ -1,9 +1,0 @@
-{
-  "routes": [
-    { "src": "/socket.io/(.*)", "dest": "/api/[...slug]" },
-    { "src": "/api/(.*)", "dest": "/api/[...slug]" },
-    { "src": "/control", "dest": "/public/control.html" },
-    { "src": "/", "dest": "/public/index.html" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ]
-}
