@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 
 const app = express();
 const PORT = process.env.PORT || 3000;  // Important pour Railway/Render
-const publicPath = path.join(__dirname, 'zen');
+const publicPath = path.join(__dirname, 'public');
 
 app.use(express.json());
 app.use(express.static(publicPath));
