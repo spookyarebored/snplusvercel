@@ -16,7 +16,10 @@ app.get('/control', (req, res) => res.sendFile(path.join(publicPath, 'control.ht
 // ====================== SOCKET.IO ======================
 const server = createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { origin: "*", methods: ["GET", "POST"] },
+  transports: ['polling', 'websocket'],  // fallback polling
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 io.on('connection', (socket) => {
